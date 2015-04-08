@@ -157,16 +157,21 @@ void BoundingBoxManagerSingleton::CalculateCollision(void)
 			else if(v1Max.z < v2Min.z || v1Min.z > v2Max.z)
 				bColliding = false;
 
-			if(v1Max.x < v2Min.x ||
-				v1Min.x > v2Max.x ||
-				v1Max.y < v2Min.y ||
-				v1Min.y > v2Max.y ||
-				v1Max.z < v2Min.z ||
-				v1Min.z > v2Max.z){
-				
+
+			vector3 AABB1_MIN = static_cast<vector3>(m_lMatrix[i] * vector4(m_lBox[i]->GetMinimumAABB(),1));
+			vector3 AABB1_MAX = static_cast<vector3>(m_lMatrix[i] * vector4(m_lBox[i]->GetMaximumAABB(),1));
+
+			vector3 AABB2_MIN = static_cast<vector3>(m_lMatrix[j] * vector4(m_lBox[j]->GetMinimumAABB(),1));
+			vector3 AABB2_MAX = static_cast<vector3>(m_lMatrix[j] * vector4(m_lBox[j]->GetMaximumAABB(),1));
+			if(AABB1_MAX.x < AABB2_MIN.x ||
+				AABB2_MAX.x < AABB1_MIN.x ||
+				AABB1_MAX.y < AABB2_MIN.y ||
+				AABB2_MAX.y < AABB1_MIN.y ||
+				AABB1_MAX.z < AABB2_MIN.z ||
+				AABB2_MAX.z < AABB1_MIN.z){
+
 				bColliding = false;
 			}
-
 
 			if(bColliding)
 				m_lColor[i] = m_lColor[j] = MERED; //We make the Boxes red

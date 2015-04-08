@@ -15,6 +15,8 @@ class BoundingBoxClass
 	vector3 m_v3Min;//Collection of minimal components of the model
 	vector3 m_v3Max;//Collection of maximum componets of the model
 	vector3 m_v3Size;//Size of the Box
+	vector3 AABB_MAX;
+	vector3 AABB_MIN;
 	String m_sName;//Name of the BoundingBox (to relate to the instance)
 	matrix4 aaBox;
 	vector3 aaBBScale;
@@ -49,6 +51,18 @@ public:
 		Returns the maximum vector
 	*/
 	vector3 GetMaximumOBB(void);
+
+	/*
+	GetMinimum
+		Returns the minimum vector
+	*/
+	vector3 GetMinimumAABB(void);
+
+	/*
+	GetMaximum
+		Returns the maximum vector
+	*/
+	vector3 GetMaximumAABB(void);
 
 	/*
 	GetCentroid
