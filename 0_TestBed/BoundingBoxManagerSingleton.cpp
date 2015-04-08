@@ -157,7 +157,7 @@ void BoundingBoxManagerSingleton::CalculateCollision(void)
 			else if(v1Max.z < v2Min.z || v1Min.z > v2Max.z)
 				bColliding = false;
 
-			if(v1Max.x < v2Min.x &&
+			/*if(v1Max.x < v2Min.x &&
 				v1Min.x > v2Max.x &&
 				v1Max.y < v2Min.y &&
 				v1Min.y > v2Max.y &&
@@ -165,7 +165,7 @@ void BoundingBoxManagerSingleton::CalculateCollision(void)
 				v1Min.z > v2Max.z){
 				
 				bColliding = false;
-			}
+			}*/
 
 
 			if(bColliding)

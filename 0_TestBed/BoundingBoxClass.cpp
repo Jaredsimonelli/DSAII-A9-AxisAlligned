@@ -129,25 +129,55 @@ void BoundingBoxClass::GenerateAxisAlignedBoundingBox(matrix4 a_m4ModeltoWorld)
 			AABB_MIN.z = vertex.z;
 		}
 	}
-
-	vector3 aaBBScale;
+	vector3 aaBBCentroid = (AABB_MIN + AABB_MAX) / 2.0f;
 	
 
 	aaBBScale.x = glm::distance(vector3(AABB_MIN.x, 0.0f, 0.0f), vector3(AABB_MAX.x, 0.0f, 0.0f));
 	aaBBScale.y = glm::distance(vector3(0.0f, AABB_MIN.y, 0.0f), vector3(0.0f, AABB_MAX.y, 0.0f));
 	aaBBScale.z = glm::distance(vector3(0.0f, 0.0f, AABB_MIN.z), vector3(0.0f, 0.0f, AABB_MAX.z));
 
-	aaBox = a_m4ModeltoWorld * glm::translate(m_v3Centroid) * glm::scale(aaBBScale);
+	/*aaBBScale.x = glm::distance(AABB_MIN.x, AABB_MAX.x);
+	aaBBScale.y = glm::distance(AABB_MIN.y, AABB_MAX.y);
+	aaBBScale.z = glm::distance(AABB_MIN.z, AABB_MAX.z);*/
+
+	/*for(unsigned int nVertex = 1; nVertex < nVertices; nVertex++)
+	{
+		//Find the max X distance
+		float fDistanceX = glm::distance(m_v3Centroid.x, lVertices[nVertex].x);
+		if(aaBBScale.x < fDistanceX)
+			aaBBScale.x = fDistanceX;
+		//Find the max Y distance
+		float fDistanceY = glm::distance(m_v3Centroid.y, lVertices[nVertex].y);
+		if(aaBBScale.y < fDistanceY)
+			aaBBScale.y = fDistanceY;
+		//Find the max Z distance
+		float fDistanceZ = glm::distance(m_v3Centroid.z, lVertices[nVertex].z);
+		if(aaBBScale.z < fDistanceZ)
+			aaBBScale.z = fDistanceZ;
+	}*/
+
+	float bank = 0; 
+	float angle = 0;
+	glm::axisAngle(a_m4ModeltoWorld, vector3(0.0f, 0.0f, 1.0f), angle);
+	angle = glm::degrees(angle);
+
+	//aaBox =  glm::translate(m_v3Centroid) *  glm::rotate(matrix4(IDENTITY), angle , vector3(0.0f, 0.0f, 1.0f)) * glm::scale(aaBBScale) * glm::rotate(matrix4(IDENTITY), -angle , vector3(0.0f, 0.0f, 1.0f));
+
+	aaBox =  glm::translate(m_v3Centroid) * glm::scale(aaBBScale);
+	
+
+	
+
 	/*float bank = 0; 
 	float angle = 0;
 	glm::axisAngle(a_m4ModeltoWorld, vector3(0.0f, 0.0f, 1.0f), angle);
 
 	if(angle < 3){
 		angle = 180 * angle / 3.14156;
-	std::cout << angle << std::endl;
+	std::cout << angle << std::endl;*/
 
 	
-	aaBox = a_m4ModeltoWorld * glm::translate(m_v3Centroid) * glm::rotate(matrix4(IDENTITY), -angle , vector3(0.0f, 0.0f, 1.0f));*/
+	//aaBox = a_m4ModeltoWorld * glm::translate(m_v3Centroid) * glm::rotate(matrix4(IDENTITY), -angle , vector3(0.0f, 0.0f, 1.0f));
 	
 
 
@@ -160,7 +190,8 @@ void BoundingBoxClass::AddBoxToRenderList(matrix4 a_m4ModelToWorld, vector3 a_vC
 	MeshManagerSingleton* pMeshMngr = MeshManagerSingleton::GetInstance();
 	if(a_bRenderCentroid)
 		pMeshMngr->AddAxisToQueue(a_m4ModelToWorld * glm::translate(m_v3Centroid));
+	pMeshMngr->AddAxisToQueue(aaBox);
 	pMeshMngr->AddCubeToQueue(a_m4ModelToWorld * glm::translate(m_v3Centroid) * glm::scale(m_v3Size), a_vColor, MERENDER::WIRE);
-	pMeshMngr->AddCubeToQueue(aaBox, a_vColor, MERENDER::WIRE);
+	pMeshMngr->AddCubeToQueue(a_m4ModelToWorld * aaBox, a_vColor, MERENDER::WIRE);
 
 }

@@ -17,6 +17,7 @@ class BoundingBoxClass
 	vector3 m_v3Size;//Size of the Box
 	String m_sName;//Name of the BoundingBox (to relate to the instance)
 	matrix4 aaBox;
+	vector3 aaBBScale;
 
 public:
 	/* Constructor */
