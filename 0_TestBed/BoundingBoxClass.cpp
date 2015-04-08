@@ -105,31 +105,32 @@ void BoundingBoxClass::GenerateAxisAlignedBoundingBox(matrix4 a_m4ModeltoWorld)
 	for(unsigned int nVertex = 1; nVertex < nVertices; nVertex++)
 	{
 		vector3 vertex = static_cast<vector3>(a_m4ModeltoWorld * vector4(lVertices[nVertex], 1.0f));
-		if (vertex.x > AABB_MAX.x){
+		if (vertex.x < AABB_MAX.x){
 			AABB_MAX.x = vertex.x;
 		}
 		
-		if (vertex.y > AABB_MAX.y){
+		if (vertex.y < AABB_MAX.y){
 			AABB_MAX.y = vertex.y;
 		}
 
-		if (vertex.z > AABB_MAX.z){
+		if (vertex.z < AABB_MAX.z){
 			AABB_MAX.z = vertex.z;
 		}
 
-		if (vertex.x < AABB_MIN.x){
+		if (vertex.x > AABB_MIN.x){
 			AABB_MIN.x = vertex.x;
 		}
 		
-		if (vertex.y < AABB_MIN.y){
+		if (vertex.y > AABB_MIN.y){
 			AABB_MIN.y = vertex.y;
 		}
 
-		if (vertex.z < AABB_MIN.z){
+		if (vertex.z > AABB_MIN.z){
 			AABB_MIN.z = vertex.z;
 		}
 	}
 	vector3 aaBBCentroid = (AABB_MIN + AABB_MAX) / 2.0f;
+	vector3 avg = (aaBBCentroid + m_v3Centroid) / 2.0f;
 	
 
 	aaBBScale.x = glm::distance(vector3(AABB_MIN.x, 0.0f, 0.0f), vector3(AABB_MAX.x, 0.0f, 0.0f));
@@ -139,45 +140,28 @@ void BoundingBoxClass::GenerateAxisAlignedBoundingBox(matrix4 a_m4ModeltoWorld)
 	/*aaBBScale.x = glm::distance(AABB_MIN.x, AABB_MAX.x);
 	aaBBScale.y = glm::distance(AABB_MIN.y, AABB_MAX.y);
 	aaBBScale.z = glm::distance(AABB_MIN.z, AABB_MAX.z);*/
-
-	/*for(unsigned int nVertex = 1; nVertex < nVertices; nVertex++)
-	{
-		//Find the max X distance
-		float fDistanceX = glm::distance(m_v3Centroid.x, lVertices[nVertex].x);
-		if(aaBBScale.x < fDistanceX)
-			aaBBScale.x = fDistanceX;
-		//Find the max Y distance
-		float fDistanceY = glm::distance(m_v3Centroid.y, lVertices[nVertex].y);
-		if(aaBBScale.y < fDistanceY)
-			aaBBScale.y = fDistanceY;
-		//Find the max Z distance
-		float fDistanceZ = glm::distance(m_v3Centroid.z, lVertices[nVertex].z);
-		if(aaBBScale.z < fDistanceZ)
-			aaBBScale.z = fDistanceZ;
-	}*/
-
-	float bank = 0; 
+ 
 	float angle = 0;
 	glm::axisAngle(a_m4ModeltoWorld, vector3(0.0f, 0.0f, 1.0f), angle);
 	angle = glm::degrees(angle);
+	if(angle >= 179)
+	{
+		angle = -angle;
+	}
+	std::cout << angle << std::endl;
 
-	//aaBox =  glm::translate(m_v3Centroid) *  glm::rotate(matrix4(IDENTITY), angle , vector3(0.0f, 0.0f, 1.0f)) * glm::scale(aaBBScale) * glm::rotate(matrix4(IDENTITY), -angle , vector3(0.0f, 0.0f, 1.0f));
+	
+	//aaBox =  glm::translate(m_v3Centroid) *  glm::rotate(matrix4(IDENTITY), -angle , vector3(0.0f, 0.0f, 1.0f)) * glm::scale(aaBBScale);// * glm::rotate(matrix4(IDENTITY), angle , vector3(0.0f, 0.0f, 1.0f));
 
 	aaBox =  glm::translate(m_v3Centroid) * glm::scale(aaBBScale);
 	
-
-	
-
-	/*float bank = 0; 
-	float angle = 0;
-	glm::axisAngle(a_m4ModeltoWorld, vector3(0.0f, 0.0f, 1.0f), angle);
-
+	/*
 	if(angle < 3){
 		angle = 180 * angle / 3.14156;
-	std::cout << angle << std::endl;*/
+	std::cout << angle << std::endl;
 
 	
-	//aaBox = a_m4ModeltoWorld * glm::translate(m_v3Centroid) * glm::rotate(matrix4(IDENTITY), -angle , vector3(0.0f, 0.0f, 1.0f));
+	aaBox = a_m4ModeltoWorld * glm::translate(m_v3Centroid) * glm::rotate(matrix4(IDENTITY), -angle , vector3(0.0f, 0.0f, 1.0f));*/
 	
 
 
