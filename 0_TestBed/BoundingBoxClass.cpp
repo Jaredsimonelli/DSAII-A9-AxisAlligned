@@ -94,6 +94,64 @@ void BoundingBoxClass::GenerateOrientedBoundingBox(String a_sInstanceName)
 void BoundingBoxClass::GenerateAxisAlignedBoundingBox(matrix4 a_m4ModeltoWorld)
 {
 	//Generate the Axis Aligned Bounding Box here based on the Oriented Bounding Box
+	
+	MeshManagerSingleton* pMeshMngr = MeshManagerSingleton::GetInstance();
+	std::vector<vector3> lVertices = pMeshMngr->GetVertices(m_sName);
+	unsigned int nVertices = lVertices.size();
+
+	vector3 AABB_MIN = static_cast<vector3>(a_m4ModeltoWorld * vector4(lVertices[0], 1.0f));
+	vector3 AABB_MAX = static_cast<vector3>(a_m4ModeltoWorld * vector4(lVertices[0], 1.0f));
+
+	for(unsigned int nVertex = 1; nVertex < nVertices; nVertex++)
+	{
+		vector3 vertex = static_cast<vector3>(a_m4ModeltoWorld * vector4(lVertices[nVertex], 1.0f));
+		if (vertex.x > AABB_MAX.x){
+			AABB_MAX.x = vertex.x;
+		}
+		
+		if (vertex.y > AABB_MAX.y){
+			AABB_MAX.y = vertex.y;
+		}
+
+		if (vertex.z > AABB_MAX.z){
+			AABB_MAX.z = vertex.z;
+		}
+
+		if (vertex.x < AABB_MIN.x){
+			AABB_MIN.x = vertex.x;
+		}
+		
+		if (vertex.y < AABB_MIN.y){
+			AABB_MIN.y = vertex.y;
+		}
+
+		if (vertex.z < AABB_MIN.z){
+			AABB_MIN.z = vertex.z;
+		}
+	}
+
+	vector3 aaBBScale;
+	
+
+	aaBBScale.x = glm::distance(vector3(AABB_MIN.x, 0.0f, 0.0f), vector3(AABB_MAX.x, 0.0f, 0.0f));
+	aaBBScale.y = glm::distance(vector3(0.0f, AABB_MIN.y, 0.0f), vector3(0.0f, AABB_MAX.y, 0.0f));
+	aaBBScale.z = glm::distance(vector3(0.0f, 0.0f, AABB_MIN.z), vector3(0.0f, 0.0f, AABB_MAX.z));
+
+	aaBox = a_m4ModeltoWorld * glm::translate(m_v3Centroid) * glm::scale(aaBBScale);
+	/*float bank = 0; 
+	float angle = 0;
+	glm::axisAngle(a_m4ModeltoWorld, vector3(0.0f, 0.0f, 1.0f), angle);
+
+	if(angle < 3){
+		angle = 180 * angle / 3.14156;
+	std::cout << angle << std::endl;
+
+	
+	aaBox = a_m4ModeltoWorld * glm::translate(m_v3Centroid) * glm::rotate(matrix4(IDENTITY), -angle , vector3(0.0f, 0.0f, 1.0f));*/
+	
+
+
+
 }
 void BoundingBoxClass::AddBoxToRenderList(matrix4 a_m4ModelToWorld, vector3 a_vColor, bool a_bRenderCentroid)
 {
@@ -103,4 +161,6 @@ void BoundingBoxClass::AddBoxToRenderList(matrix4 a_m4ModelToWorld, vector3 a_vC
 	if(a_bRenderCentroid)
 		pMeshMngr->AddAxisToQueue(a_m4ModelToWorld * glm::translate(m_v3Centroid));
 	pMeshMngr->AddCubeToQueue(a_m4ModelToWorld * glm::translate(m_v3Centroid) * glm::scale(m_v3Size), a_vColor, MERENDER::WIRE);
+	pMeshMngr->AddCubeToQueue(aaBox, a_vColor, MERENDER::WIRE);
+
 }

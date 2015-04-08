@@ -16,6 +16,7 @@ class BoundingBoxClass
 	vector3 m_v3Max;//Collection of maximum componets of the model
 	vector3 m_v3Size;//Size of the Box
 	String m_sName;//Name of the BoundingBox (to relate to the instance)
+	matrix4 aaBox;
 
 public:
 	/* Constructor */
