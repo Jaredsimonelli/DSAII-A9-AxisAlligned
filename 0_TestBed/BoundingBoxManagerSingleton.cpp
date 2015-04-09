@@ -143,12 +143,15 @@ void BoundingBoxManagerSingleton::CalculateCollision(void)
 			//If the distance between the center of both Boxs is less than the sum of their radius there is a collision
 			//For this check we will assume they will be colliding unless they are not in the same space in X, Y or Z
 			//so we place them in global positions
-			vector3 v1Min = static_cast<vector3>(m_lMatrix[i] * vector4(m_lBox[i]->GetMinimumOBB(),1));
-			vector3 v1Max = static_cast<vector3>(m_lMatrix[i] * vector4(m_lBox[i]->GetMaximumOBB(),1));
 
-			vector3 v2Min = static_cast<vector3>(m_lMatrix[j] * vector4(m_lBox[j]->GetMinimumOBB(),1));
-			vector3 v2Max = static_cast<vector3>(m_lMatrix[j] * vector4(m_lBox[j]->GetMaximumOBB(),1));
+			//Getting min and max values from AABB
+			vector3 v1Min = m_lBox[i]->GetMinimumAABB();
+			vector3 v1Max = m_lBox[i]->GetMaximumAABB();
 
+			vector3 v2Min = m_lBox[j]->GetMinimumAABB();
+			vector3 v2Max = m_lBox[j]->GetMaximumAABB();
+
+			//Check if the AABB is NOT colliding with anything, if it ISNT colliding with anything bColliding is false
 			bool bColliding = true;
 			if(v1Max.x < v2Min.x || v1Min.x > v2Max.x)
 				bColliding = false;
@@ -157,22 +160,7 @@ void BoundingBoxManagerSingleton::CalculateCollision(void)
 			else if(v1Max.z < v2Min.z || v1Min.z > v2Max.z)
 				bColliding = false;
 
-
-			vector3 AABB1_MIN = static_cast<vector3>(m_lMatrix[i] * vector4(m_lBox[i]->GetMinimumAABB(),1));
-			vector3 AABB1_MAX = static_cast<vector3>(m_lMatrix[i] * vector4(m_lBox[i]->GetMaximumAABB(),1));
-
-			vector3 AABB2_MIN = static_cast<vector3>(m_lMatrix[j] * vector4(m_lBox[j]->GetMinimumAABB(),1));
-			vector3 AABB2_MAX = static_cast<vector3>(m_lMatrix[j] * vector4(m_lBox[j]->GetMaximumAABB(),1));
-			if(AABB1_MAX.x < AABB2_MIN.x ||
-				AABB2_MAX.x < AABB1_MIN.x ||
-				AABB1_MAX.y < AABB2_MIN.y ||
-				AABB2_MAX.y < AABB1_MIN.y ||
-				AABB1_MAX.z < AABB2_MIN.z ||
-				AABB2_MAX.z < AABB1_MIN.z){
-
-				bColliding = false;
-			}
-
+			//If the AABB is colliding with another AABB turn the boxes red
 			if(bColliding)
 				m_lColor[i] = m_lColor[j] = MERED; //We make the Boxes red
 

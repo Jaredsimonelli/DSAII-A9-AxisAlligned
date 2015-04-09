@@ -111,28 +111,33 @@ void BoundingBoxClass::GenerateAxisAlignedBoundingBox(matrix4 a_m4ModeltoWorld)
 		vector3 vertex = static_cast<vector3>(a_m4ModeltoWorld * vector4(lVertices[nVertex], 1.0f));
 
 		//m_v3Centroid += vertex;
+		//Check for min and max X value
 		if(AABB_MIN.x > vertex.x)
 			AABB_MIN.x = vertex.x;
 		else if(AABB_MAX.x < vertex.x)
 			AABB_MAX.x = vertex.x;
-			
+		//Check for min and max Y values	
 		if(AABB_MIN.y > vertex.y)
 			AABB_MIN.y = vertex.y;
 		else if(AABB_MAX.y < vertex.y)
 			AABB_MAX.y = vertex.y;
-
+		//Check for min and max Z values
 		if(AABB_MIN.z > vertex.z)
 			AABB_MIN.z = vertex.z;
 		else if(AABB_MAX.z < vertex.z)
 			AABB_MAX.z = vertex.z;
 	}
+	//Find center of the AABB
 	vector3 aaBBCentroid = (AABB_MIN + AABB_MAX) / 2.0f;
 
+	//Determine the amount to scale the AABB by getting the distance between the AABB_MIN and AABB_MAX values
 	aaBBScale.x = glm::distance(vector3(AABB_MIN.x, 0.0f, 0.0f), vector3(AABB_MAX.x, 0.0f, 0.0f));
 	aaBBScale.y = glm::distance(vector3(0.0f, AABB_MIN.y, 0.0f), vector3(0.0f, AABB_MAX.y, 0.0f));
 	aaBBScale.z = glm::distance(vector3(0.0f, 0.0f, AABB_MIN.z), vector3(0.0f, 0.0f, AABB_MAX.z));
 
+	//Set up matrix for AABB to render
 	aaBox =  glm::translate(aaBBCentroid) *   glm::scale(aaBBScale);
+
 }
 
 void BoundingBoxClass::AddBoxToRenderList(matrix4 a_m4ModelToWorld, vector3 a_vColor, bool a_bRenderCentroid)
